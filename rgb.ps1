@@ -35,7 +35,7 @@ function install([string]$a)
 			powercfg.exe /setdcvalueindex scheme_current 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e $time
 			powercfg.exe /setacvalueindex scheme_current 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e $time
 	
-			cls; write-host "`nInstallation in progress"; start-sleep -seconds 5; taskkill /fi "WINDOWTITLE eq uffemcev rgb"
+			cls; write-host "`nInstallation complete"; start-sleep -seconds 5; taskkill /fi "WINDOWTITLE eq uffemcev rgb"
 		}
 	}
 	
