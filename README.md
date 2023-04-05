@@ -34,5 +34,5 @@ powershell -ExecutionPolicy Bypass ".\rgb.ps1"
 * Из-за особенностей Windows монитор и подсветка не всегда гаснут ровно через заданное время, иногда необходимо подождать чуть дольше
 
 ## Ссылки
-* [SignalRGB wiki](https://docs.signalrgb.com/application-url-s)
-* [OpenRGB wiki](https://openrgb-wiki.readthedocs.io/en/latest/Frequently-Asked-Questions/)
+* [SignalRGB Wiki](https://docs.signalrgb.com/application-url-s)
+* [OpenRGB Wiki](https://openrgb-wiki.readthedocs.io/en/latest/Frequently-Asked-Questions)
