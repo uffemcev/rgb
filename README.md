@@ -12,4 +12,4 @@ powershell -ExecutionPolicy Bypass "& ([ScriptBlock]::Create((irm raw.githubuser
 ```
 powershell -ExecutionPolicy Bypass ".\rgb.ps1"
 ```
-По завершению работы файл скрипта можно удалить.
+По завершению работы файл можно удалить.
