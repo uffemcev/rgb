@@ -1,26 +1,24 @@
-$time = 900
-
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
 {
 	$host.ui.RawUI.WindowTitle = 'initialization'
 	$o = $MyInvocation.line
 	Start-Process powershell "-ExecutionPolicy Bypass `"cd '$pwd'; $o`"" -Verb RunAs
 	taskkill /fi "WINDOWTITLE eq initialization"
-} else {$host.ui.RawUI.WindowTitle = 'uffemcev rgb'}
+} else {$host.ui.RawUI.WindowTitle = 'uffemcev rgb'; cls}
 
 function install([string]$a)
-{
-	if ($null -eq $path) {$path = '.\'}
-	
+{	
 	if ($a -eq 'run')
 	{
-		$stateChangeTrigger = Get-CimClass -Namespace ROOT\Microsoft\Windows\TaskScheduler -ClassName MSFT_TaskSessionStateChangeTrigger
-		$onUnlockTrigger = New-CimInstance -CimClass $stateChangeTrigger -Property @{StateChange = 8} -ClientOnly
-		$onLockTrigger = New-CimInstance -CimClass $stateChangeTrigger -Property @{StateChange = 7} -ClientOnly
-		$Principal = New-ScheduledTaskPrincipal -GroupId 'S-1-5-32-545' -RunLevel Highest
-		$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries
-
+		if ($null -eq $path) {$path = $pwd}
 		dir -Path $path -ErrorAction SilentlyContinue -Force | where {$_ -in 'SignalRgbLauncher.exe','OpenRGB.exe'} | %{
+
+			$stateChangeTrigger = Get-CimClass -Namespace ROOT\Microsoft\Windows\TaskScheduler -ClassName MSFT_TaskSessionStateChangeTrigger
+			$onUnlockTrigger = New-CimInstance -CimClass $stateChangeTrigger -Property @{StateChange = 8} -ClientOnly
+			$onLockTrigger = New-CimInstance -CimClass $stateChangeTrigger -Property @{StateChange = 7} -ClientOnly
+			$Principal = New-ScheduledTaskPrincipal -GroupId 'S-1-5-32-545' -RunLevel Highest
+			$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries
+			cls; $time = Read-Host "`nTime in seconds before monitor and rgb turn off"
 	
 			if ($_.Name -eq 'SignalRgbLauncher.exe')
 			{
