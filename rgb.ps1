@@ -22,6 +22,7 @@ function install([string]$a)
 	
 			if ($_.Name -eq 'SignalRgbLauncher.exe')
 			{
+				Start-Process 'signalrgb://effect/install/Solid%20Color?&-silentlaunch-'
 				Register-ScheduledTask RGB_on -InputObject (New-ScheduledTask -Action (New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-WindowStyle Hidden -Command Start-Process 'signalrgb://effect/apply/Solid%20Color?color=white&-silentlaunch-'") -Principal ($Principal) -Trigger ($onUnlockTrigger) -Settings ($Settings))
 				Register-ScheduledTask RGB_off -InputObject (New-ScheduledTask -Action (New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-WindowStyle Hidden -Command Start-Process 'signalrgb://effect/apply/Solid%20Color?color=black&-silentlaunch-'") -Principal ($Principal) -Trigger ($onLockTrigger) -Settings ($Settings))
 			} elseif ($_.Name -eq 'OpenRGB.exe')
