@@ -32,3 +32,7 @@ powershell -ExecutionPolicy Bypass ".\rgb.ps1"
 * По умолчанию, сочетание клавиш WIN + L блокирует рабочую станцию, поэтому подсветка так же выключится
 * Не стоит устанавливать время слишком низким, рекомендованный минимум - 300 секунд
 * Из-за особенностей Windows монитор и подсветка не всегда гаснут ровно через заданное время, иногда необходимо подождать чуть дольше
+
+## Ссылки
+* [SignalRGB wiki](https://docs.signalrgb.com/application-url-s)
+* [OpenRGB wiki](https://openrgb-wiki.readthedocs.io/en/latest/Frequently-Asked-Questions/)
