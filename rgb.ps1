@@ -18,7 +18,8 @@ function install([string]$a)
 			$onLockTrigger = New-CimInstance -CimClass $stateChangeTrigger -Property @{StateChange = 7} -ClientOnly
 			$Principal = New-ScheduledTaskPrincipal -GroupId 'S-1-5-32-545' -RunLevel Highest
 			$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries
-			cls; $time = Read-Host "`nTime in seconds before monitor and rgb turn off"
+			cls
+			$time = Read-Host "`nTime in seconds before monitor and rgb turn off"
 	
 			if ($_.Name -eq 'SignalRgbLauncher.exe')
 			{
