@@ -46,20 +46,18 @@ function install([string]$a)
 				Register-ScheduledTask RGB_off -InputObject (New-ScheduledTask -Action (New-ScheduledTaskAction -Execute "$path\OpenRGB.exe" -Argument "--noautoconnect --color black --mode direct") -Principal ($Principal) -Trigger ($onLockTrigger) -Settings ($Settings))
 			}
 			
-			reg.exe add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaverIsSecure" /t REG_SZ /d "1" /f
-			reg.exe add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaveTimeOut" /t REG_SZ /d "$time" /f
-			powercfg.exe /setdcvalueindex scheme_current 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e $time
-			powercfg.exe /setacvalueindex scheme_current 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e $time
+			reg add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaverIsSecure" /t REG_SZ /d "1" /f
+			reg add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaveTimeOut" /t REG_SZ /d "$time" /f
+			powercfg /setdcvalueindex scheme_current 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e $time
+			powercfg /setacvalueindex scheme_current 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e $time
 			$a = 'exit'
 		}
 	}
 	
 	if ($a -eq 'reset')
 	{
-		reg.exe add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaverIsSecure" /t REG_SZ /d "0" /f
-		reg.exe delete "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaverIsSecure" /f
-		reg.exe delete "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaveTimeOut" /f
-		reg.exe add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /f
+		reg delete "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaverIsSecure" /f
+		reg delete "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaveTimeOut" /f
 		Unregister-ScheduledTask -TaskName RGB_on -Confirm:$false
 		Unregister-ScheduledTask -TaskName RGB_off -Confirm:$false
 		$a = 'exit'
