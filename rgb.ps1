@@ -80,9 +80,10 @@ if ($o -eq 1) {install reset}
 if ($o -eq 2) {install exit}
 
 Add-Type -AssemblyName System.Windows.Forms
-$Browser = New-Object System.Windows.Forms.OpenFileDialog
-$Browser.InitialDirectory = [Environment]::GetFolderPath('Desktop') 
-$Browser.Filter = 'RGB sofware (*.exe)|*.exe'
-$null = $Browser.ShowDialog()
-$path = Split-Path -Parent $Browser.FileName
+$b = New-Object System.Windows.Forms.OpenFileDialog
+$b.InitialDirectory = [Environment]::GetFolderPath('Desktop') 
+$b.MultiSelect = $false
+$b.Filter = 'RGB sofware (*.exe)|*.exe'
+$b.ShowDialog()
+$path = Split-Path -Parent $b.FileName
 install run
