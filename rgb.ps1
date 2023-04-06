@@ -81,7 +81,7 @@ Add-Type -AssemblyName System.Windows.Forms
 $b = New-Object System.Windows.Forms.OpenFileDialog
 $b.InitialDirectory = [Environment]::GetFolderPath('Desktop') 
 $b.MultiSelect = $false
-$b.Filter = 'RGB sofware (*.exe)|*.exe'
+$b.Filter = 'RGB software|Open*; Signal*'
 $b.ShowDialog()
 $path = Split-Path -Parent $b.FileName
 install run
