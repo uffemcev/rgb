@@ -79,6 +79,7 @@ if ($o -eq 0) {install run}
 if ($o -eq 1) {install reset}
 if ($o -eq 2) {install exit}
 
+Add-Type -AssemblyName System.Windows.Forms
 $Browser = New-Object System.Windows.Forms.OpenFileDialog
 $Browser.InitialDirectory = [Environment]::GetFolderPath('Desktop') 
 $Browser.Filter = 'RGB sofware (*.exe)|*.exe'
