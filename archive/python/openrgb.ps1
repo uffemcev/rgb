@@ -49,6 +49,8 @@ if ($openrgb -eq '')
 }
 
 cls
+$time = Read-Host "`nTime in seconds before monitor and rgb turns off"
+cls
 Write-Host "`nPlease wait"
 pythonw -c "import subprocess; subprocess.Popen(r`'$openrgb --noautoconnect --server --gui`')"
 start-sleep -seconds 5
@@ -76,6 +78,11 @@ $ActionLogon = New-ScheduledTaskAction -Execute 'pythonw.exe' -Argument "-c `"im
 Register-ScheduledTask Unlock -InputObject (New-ScheduledTask -Action ($ActionUnlock) -Principal ($Principal) -Trigger ($TriggerUnlock) -Settings ($Settings))
 Register-ScheduledTask Lock -InputObject (New-ScheduledTask -Action ($ActionLock) -Principal ($Principal) -Trigger ($TriggerLock) -Settings ($Settings))
 Register-ScheduledTask Logon -InputObject (New-ScheduledTask -Action ($ActionLogon) -Principal ($Principal) -Trigger ($TriggerLogon) -Settings ($Settings))
+
+reg add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaverIsSecure" /t REG_SZ /d "1" /f
+reg add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaveTimeOut" /t REG_SZ /d "$time" /f
+powercfg /setdcvalueindex scheme_current 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e $time
+powercfg /setacvalueindex scheme_current 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e $time
 
 taskkill /fi "WINDOWTITLE eq OpenRGB*"
 cls
