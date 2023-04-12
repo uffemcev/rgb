@@ -45,9 +45,9 @@ function install
 	if ($openrgb -eq '')
 	{
 		cls
-		Write-Host "`nError"
+		Write-Host "`nFile was not selected"
 		start-sleep -seconds 5
-		taskkill /fi "WINDOWTITLE eq uffemcev*"
+		goexit
 	}
 	
 	cls
