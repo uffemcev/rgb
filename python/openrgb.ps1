@@ -45,7 +45,7 @@ function install
 	if ($openrgb -eq '')
 	{
 		cls
-		Write-Host "`nFile was not selected"
+		Write-Host "`nIncorrect file"
 		start-sleep -seconds 5
 		goexit
 	}
