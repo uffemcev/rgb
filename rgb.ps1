@@ -27,6 +27,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 
 function install
 {	
+	Write-Host "`nPlease select OpenRGB.exe or SignalRgbLauncher.exe"
 	Add-Type -AssemblyName System.Windows.Forms
 	$b = New-Object System.Windows.Forms.OpenFileDialog
 	$b.InitialDirectory = [Environment]::GetFolderPath('Desktop') 
