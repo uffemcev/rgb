@@ -1,3 +1,11 @@
+<#
+	Запуск:
+	powershell -ExecutionPolicy Bypass "& ([ScriptBlock]::Create((irm raw.githubusercontent.com/uffemcev/rgb/main/python/rgb.ps1)))"
+	powershell -ExecutionPolicy Bypass ".\rgb.ps1"
+	
+	Для работы необходимы права администратора, winget и python. При необходимости всё устанавливается автоматически.
+#>
+
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
 {
 	$host.ui.RawUI.WindowTitle = 'initialization: admin'
