@@ -81,17 +81,13 @@ function install
 	$LockTrigger = New-CimInstance -CimClass $LockUnlockState -Property @{StateChange = 7} -ClientOnly
 	$UnlockTrigger = New-CimInstance -CimClass $LockUnlockState -Property @{StateChange = 8} -ClientOnly
 	
-	$SleepState = Get-CimClass -ClassName MSFT_TaskEventTrigger -Namespace Root/Microsoft/Windows/TaskScheduler:MSFT_TaskEventTrigger
-	$SleepTrigger = New-CimInstance -CimClass $SleepState -ClientOnly
-	$SleepTrigger.Subscription = "<QueryList><Query Id='0' Path='System'><Select Path='System'>*[System[EventID=107]]</Select></Query></QueryList>"
-	
 	$LockAction = New-ScheduledTaskAction -Execute 'pythonw.exe' -Argument "-c `"import openrgb; client = openrgb.OpenRGBClient(); client.load_profile(`'LockRGB`')`"" -WorkingDirectory $python
 	$UnlockAction = New-ScheduledTaskAction -Execute 'pythonw.exe' -Argument "-c `"import openrgb; client = openrgb.OpenRGBClient(); client.devices[0].set_mode(0); client.devices[2].set_mode(0); client.load_profile(`'UnlockRGB`')`"" -WorkingDirectory $python
 	$LogonAction = New-ScheduledTaskAction -Execute 'pythonw.exe' -Argument "-c `"import subprocess, time; subprocess.Popen(r`'$openrgb --noautoconnect --server`'); time.sleep(5); subprocess.call(`'schtasks /run /TN UnlockRGB`')`"" -WorkingDirectory $python
 	
 	Register-ScheduledTask LockRGB -InputObject (New-ScheduledTask -Action ($LockAction) -Principal ($Principal) -Trigger ($LockTrigger) -Settings ($Settings))
 	Register-ScheduledTask UnlockRGB -InputObject (New-ScheduledTask -Action ($UnlockAction) -Principal ($Principal) -Trigger ($UnlockTrigger) -Settings ($Settings))
-	Register-ScheduledTask LogonRGB -InputObject (New-ScheduledTask -Action ($LogonAction) -Principal ($Principal) -Trigger ($LogonTrigger, $SleepTrigger) -Settings ($Settings))
+	Register-ScheduledTask LogonRGB -InputObject (New-ScheduledTask -Action ($LogonAction) -Principal ($Principal) -Trigger ($LogonTrigger) -Settings ($Settings))
 	
 	reg add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaverIsSecure" /t REG_SZ /d "1" /f
 	reg add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaveTimeOut" /t REG_SZ /d "$time" /f
