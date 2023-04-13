@@ -102,7 +102,7 @@ function install
 	cls
 	Write-Host "`nPlease wait"
 	start-sleep -seconds 5
-	Start-ScheduledTask -TaskName "Logon"
+	Start-ScheduledTask -TaskName "LogonRGB"
 	goexit
 }
 
