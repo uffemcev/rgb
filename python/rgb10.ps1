@@ -77,6 +77,10 @@ function install
 	$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries
 	$LogonTrigger = New-ScheduledTaskTrigger -AtLogon	
 
+	$SleepState = Get-CimClass -ClassName MSFT_TaskEventTrigger -Namespace Root/Microsoft/Windows/TaskScheduler:MSFT_TaskEventTrigger
+	$SleepTrigger = New-CimInstance -CimClass $SleepState -ClientOnly
+	$SleepTrigger.Subscription = "<QueryList><Query Id='0' Path='System'><Select Path='System'>*[System[EventID=107]]</Select></Query></QueryList>"
+	
 	$LockUnlockState = Get-CimClass -Namespace ROOT\Microsoft\Windows\TaskScheduler -ClassName MSFT_TaskSessionStateChangeTrigger
 	$LockTrigger = New-CimInstance -CimClass $LockUnlockState -Property @{StateChange = 7} -ClientOnly
 	$UnlockTrigger = New-CimInstance -CimClass $LockUnlockState -Property @{StateChange = 8} -ClientOnly
@@ -87,7 +91,7 @@ function install
 	
 	Register-ScheduledTask LockRGB -InputObject (New-ScheduledTask -Action ($LockAction) -Principal ($Principal) -Trigger ($LockTrigger) -Settings ($Settings))
 	Register-ScheduledTask UnlockRGB -InputObject (New-ScheduledTask -Action ($UnlockAction) -Principal ($Principal) -Trigger ($UnlockTrigger) -Settings ($Settings))
-	Register-ScheduledTask LogonRGB -InputObject (New-ScheduledTask -Action ($LogonAction) -Principal ($Principal) -Trigger ($LogonTrigger) -Settings ($Settings))
+	Register-ScheduledTask LogonRGB -InputObject (New-ScheduledTask -Action ($LogonAction) -Principal ($Principal) -Trigger ($LogonTrigger, $SleepTrigger) -Settings ($Settings))
 	
 	reg add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaverIsSecure" /t REG_SZ /d "1" /f
 	reg add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaveTimeOut" /t REG_SZ /d "$time" /f
