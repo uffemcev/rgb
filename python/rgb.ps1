@@ -73,21 +73,25 @@ function install
 	$null = $host.ui.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 	pythonw -c "from openrgb import OpenRGBClient; from openrgb.utils import RGBColor, DeviceType; client = OpenRGBClient(); client.save_profile('Lock')"
 	
-	$Trigger = Get-CimClass -Namespace ROOT\Microsoft\Windows\TaskScheduler -ClassName MSFT_TaskSessionStateChangeTrigger
 	$Principal = New-ScheduledTaskPrincipal -GroupId 'S-1-5-32-545' -RunLevel Highest
 	$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries
+	$LogonTrigger = New-ScheduledTaskTrigger -AtLogon	
+
+	$LockUnlockState = Get-CimClass -Namespace ROOT\Microsoft\Windows\TaskScheduler -ClassName MSFT_TaskSessionStateChangeTrigger
+	$LockTrigger = New-CimInstance -CimClass $LockUnlockState -Property @{StateChange = 7} -ClientOnly
+	$UnlockTrigger = New-CimInstance -CimClass $LockUnlockState -Property @{StateChange = 8} -ClientOnly
 	
-	$TriggerUnlock = New-CimInstance -CimClass $Trigger -Property @{StateChange = 8} -ClientOnly
-	$TriggerLock = New-CimInstance -CimClass $Trigger -Property @{StateChange = 7} -ClientOnly
-	$TriggerLogon = New-ScheduledTaskTrigger -AtLogon
+	$SleepState = Get-CimClass -ClassName MSFT_TaskEventTrigger -Namespace Root/Microsoft/Windows/TaskScheduler:MSFT_TaskEventTrigger
+	$SleepTrigger = New-CimInstance -CimClass $SleepState -ClientOnly
+	$SleepTrigger.Subscription = "<QueryList><Query Id='0' Path='System'><Select Path='System'>*[System[EventID=107]]</Select></Query></QueryList>"
 	
-	$ActionUnlock = New-ScheduledTaskAction -Execute 'pythonw.exe' -Argument '-c "import openrgb; client = openrgb.OpenRGBClient(); client.devices[0].set_mode(0); client.devices[2].set_mode(0); client.load_profile(1)"' -WorkingDirectory $python
-	$ActionLock = New-ScheduledTaskAction -Execute 'pythonw.exe' -Argument '-c "import openrgb; client = openrgb.OpenRGBClient(); client.load_profile(0)"' -WorkingDirectory $python
-	$ActionLogon = New-ScheduledTaskAction -Execute 'pythonw.exe' -Argument "-c `"import subprocess, time; subprocess.Popen(r`'$openrgb --noautoconnect --server`'); time.sleep(5); subprocess.call(`'schtasks /run /TN Unlock`')`"" -WorkingDirectory $python
+	$LockAction = New-ScheduledTaskAction -Execute 'pythonw.exe' -Argument '-c "import openrgb; client = openrgb.OpenRGBClient(); client.load_profile(0)"' -WorkingDirectory $python
+	$UnlockAction = New-ScheduledTaskAction -Execute 'pythonw.exe' -Argument '-c "import openrgb; client = openrgb.OpenRGBClient(); client.devices[0].set_mode(0); client.devices[2].set_mode(0); client.load_profile(1)"' -WorkingDirectory $python
+	$LogonAction = New-ScheduledTaskAction -Execute 'pythonw.exe' -Argument "-c `"import subprocess, time; subprocess.Popen(r`'$openrgb --noautoconnect --server`'); time.sleep(5); subprocess.call(`'schtasks /run /TN Unlock`')`"" -WorkingDirectory $python
 	
-	Register-ScheduledTask Unlock -InputObject (New-ScheduledTask -Action ($ActionUnlock) -Principal ($Principal) -Trigger ($TriggerUnlock) -Settings ($Settings))
-	Register-ScheduledTask Lock -InputObject (New-ScheduledTask -Action ($ActionLock) -Principal ($Principal) -Trigger ($TriggerLock) -Settings ($Settings))
-	Register-ScheduledTask Logon -InputObject (New-ScheduledTask -Action ($ActionLogon) -Principal ($Principal) -Trigger ($TriggerLogon) -Settings ($Settings))
+	Register-ScheduledTask LockRGB -InputObject (New-ScheduledTask -Action ($LockAction) -Principal ($Principal) -Trigger ($LockTrigger) -Settings ($Settings))
+	Register-ScheduledTask UnlockRGB -InputObject (New-ScheduledTask -Action ($UnlockAction) -Principal ($Principal) -Trigger ($UnlockTrigger) -Settings ($Settings))
+	Register-ScheduledTask LogonRGB -InputObject (New-ScheduledTask -Action ($LogonAction) -Principal ($Principal) -Trigger ($LogonTrigger, $SleepTrigger) -Settings ($Settings))
 	
 	reg add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaverIsSecure" /t REG_SZ /d "1" /f
 	reg add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaveTimeOut" /t REG_SZ /d "$time" /f
@@ -106,9 +110,9 @@ function reset
 {
 	reg delete "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaverIsSecure" /f
 	reg delete "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaveTimeOut" /f
-	Unregister-ScheduledTask -TaskName Unlock -Confirm:$false
-	Unregister-ScheduledTask -TaskName Lock -Confirm:$false
-	Unregister-ScheduledTask -TaskName Logon -Confirm:$false
+	Unregister-ScheduledTask -TaskName UnlockRGB -Confirm:$false
+	Unregister-ScheduledTask -TaskName LockRGB -Confirm:$false
+	Unregister-ScheduledTask -TaskName LogonRGB -Confirm:$false
 	taskkill /im OpenRGB.exe /f
 	goexit
 }
