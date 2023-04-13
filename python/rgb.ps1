@@ -67,11 +67,11 @@ function install
 	cls
 	Write-Host "`nPlease set up an active profile and press any key"
 	$null = $host.ui.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-	pythonw -c "from openrgb import OpenRGBClient; from openrgb.utils import RGBColor, DeviceType; client = OpenRGBClient(); client.save_profile('Unlock')"
+	pythonw -c "from openrgb import OpenRGBClient; from openrgb.utils import RGBColor, DeviceType; client = OpenRGBClient(); client.save_profile('UnlockRGB')"
 	cls
 	Write-Host "`nPlease set up an idle profile and press any key"
 	$null = $host.ui.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-	pythonw -c "from openrgb import OpenRGBClient; from openrgb.utils import RGBColor, DeviceType; client = OpenRGBClient(); client.save_profile('Lock')"
+	pythonw -c "from openrgb import OpenRGBClient; from openrgb.utils import RGBColor, DeviceType; client = OpenRGBClient(); client.save_profile('LockRGB')"
 	
 	$Principal = New-ScheduledTaskPrincipal -GroupId 'S-1-5-32-545' -RunLevel Highest
 	$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries
