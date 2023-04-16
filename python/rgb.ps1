@@ -87,7 +87,7 @@ function install
 	
 	$LockAction = New-ScheduledTaskAction -Execute 'pythonw.exe' -Argument "-c `"import openrgb; client = openrgb.OpenRGBClient(); client.load_profile(`'LockRGB`')`"" -WorkingDirectory $python
 	$UnlockAction = New-ScheduledTaskAction -Execute 'pythonw.exe' -Argument "-c `"import openrgb; client = openrgb.OpenRGBClient(); client.devices[0].set_mode(0); client.devices[2].set_mode(0); client.load_profile(`'UnlockRGB`')`"" -WorkingDirectory $python
-	$LogonAction = New-ScheduledTaskAction -Execute 'pythonw.exe' -Argument "-c `"import subprocess, time; subprocess.Popen(r`'$openrgb --server`'); time.sleep(5); subprocess.call(`'schtasks /run /TN UnlockRGB`')`"" -WorkingDirectory $python
+	$LogonAction = New-ScheduledTaskAction -Execute 'pythonw.exe' -Argument "-c `"import subprocess, time; subprocess.Popen(r`'$openrgb --noautoconnect --server`'); time.sleep(5); subprocess.call(`'schtasks /run /TN UnlockRGB`')`"" -WorkingDirectory $python
 	
 	Register-ScheduledTask LockRGB -InputObject (New-ScheduledTask -Action ($LockAction) -Principal ($Principal) -Trigger ($LockTrigger) -Settings ($Settings))
 	Register-ScheduledTask UnlockRGB -InputObject (New-ScheduledTask -Action ($UnlockAction) -Principal ($Principal) -Trigger ($UnlockTrigger) -Settings ($Settings))
