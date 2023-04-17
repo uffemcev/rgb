@@ -32,58 +32,57 @@ function install
 	$b = New-Object System.Windows.Forms.OpenFileDialog
 	$b.InitialDirectory = [Environment]::GetFolderPath('Desktop') 
 	$b.MultiSelect = $false
-	$b.Filter = 'RGB software|*.exe'
+	$b.Filter = 'RGB software|OpenRGB.exe; SignalRgbLauncher.exe'
 	$b.ShowDialog()
 	$filepath = Split-Path -Parent $b.FileName
 	$filename = Split-Path -Leaf $b.FileName
 	
-	if (dir -Path $filepath -ErrorAction SilentlyContinue -Force | where {$_ -in 'SignalRgbLauncher.exe','OpenRGB.exe'})
-	{
-		cls
-		$time = Read-Host "`nTime in seconds before monitor and rgb turns off"
-		reg add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaverIsSecure" /t REG_SZ /d "1" /f
-		reg add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaveTimeOut" /t REG_SZ /d "$time" /f
-		powercfg /setdcvalueindex scheme_current 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e $time
-		powercfg /setacvalueindex scheme_current 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e $time
-
-		$SleepState = Get-CimClass -ClassName MSFT_TaskEventTrigger -Namespace Root/Microsoft/Windows/TaskScheduler:MSFT_TaskEventTrigger
-		$SleepTrigger = New-CimInstance -CimClass $SleepState -ClientOnly
-		$SleepTrigger.Subscription = "<QueryList><Query Id='0' Path='System'><Select Path='System'>*[System[EventID=107]]</Select></Query></QueryList>"
-		$LockUnlockState = Get-CimClass -Namespace ROOT\Microsoft\Windows\TaskScheduler -ClassName MSFT_TaskSessionStateChangeTrigger
-		$LockTrigger = New-CimInstance -CimClass $LockUnlockState -Property @{StateChange = 7} -ClientOnly
-		$UnlockTrigger = New-CimInstance -CimClass $LockUnlockState -Property @{StateChange = 8} -ClientOnly
-		$LogonTrigger = New-ScheduledTaskTrigger -AtLogon
-		$Principal = New-ScheduledTaskPrincipal -GroupId 'S-1-5-32-545' -RunLevel Highest
-		$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries
-	
-		$SignalRGB_ON = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-WindowStyle Hidden -Command Start-Process 'signalrgb://effect/apply/Solid%20Color?color=white&-silentlaunch-'"
-		$SignalRGB_OFF = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-WindowStyle Hidden -Command Start-Process 'signalrgb://effect/apply/Solid%20Color?color=black&-silentlaunch-'"
-		$OpenRGB_ON = New-ScheduledTaskAction -Execute $filename -Argument "--noautoconnect --color white --mode direct" -WorkingDirectory $filepath
-		$OpenRGB_OFF = New-ScheduledTaskAction -Execute $filename -Argument "--noautoconnect --color black --mode direct" -WorkingDirectory $filepath
-	
-		if ($filename -eq 'SignalRgbLauncher.exe')
-		{
-			Start-Process 'signalrgb://effect/install/Solid%20Color?&-silentlaunch-'
-			Register-ScheduledTask "RGB ON" -InputObject (New-ScheduledTask -Action ($SignalRGB_ON) -Principal ($Principal) -Trigger ($UnlockTrigger) -Settings ($Settings))
-			Register-ScheduledTask "RGB OFF" -InputObject (New-ScheduledTask -Action ($SignalRGB_OFF) -Principal ($Principal) -Trigger ($LockTrigger) -Settings ($Settings))
-		} elseif ($filename -eq 'OpenRGB.exe')
-		{
-			Register-ScheduledTask "RGB ON" -InputObject (New-ScheduledTask -Action ($OpenRGB_ON) -Principal ($Principal) -Trigger ($UnlockTrigger, $LogonTrigger, $SleepTrigger) -Settings ($Settings))
-			Register-ScheduledTask "RGB OFF" -InputObject (New-ScheduledTask -Action ($OpenRGB_OFF) -Principal ($Principal) -Trigger ($LockTrigger) -Settings ($Settings))
-		}		
-		
-		cls
-		Write-Host "`nPlease wait"
-		start-sleep -seconds 5
-		Start-ScheduledTask -TaskName "RGB ON"
-		goexit
-	} else
+	if ($b.FileName -eq '')
 	{
 		cls
 		Write-Host "`nIncorrect file"
 		start-sleep -seconds 5
 		goexit
 	}
+
+	cls
+	$time = Read-Host "`nTime in seconds before monitor and rgb turns off"
+	reg add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaverIsSecure" /t REG_SZ /d "1" /f
+	reg add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaveTimeOut" /t REG_SZ /d "$time" /f
+	powercfg /setdcvalueindex scheme_current 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e $time
+	powercfg /setacvalueindex scheme_current 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e $time
+
+	$SleepState = Get-CimClass -ClassName MSFT_TaskEventTrigger -Namespace Root/Microsoft/Windows/TaskScheduler:MSFT_TaskEventTrigger
+	$SleepTrigger = New-CimInstance -CimClass $SleepState -ClientOnly
+	$SleepTrigger.Subscription = "<QueryList><Query Id='0' Path='System'><Select Path='System'>*[System[EventID=107]]</Select></Query></QueryList>"
+	$LockUnlockState = Get-CimClass -Namespace ROOT\Microsoft\Windows\TaskScheduler -ClassName MSFT_TaskSessionStateChangeTrigger
+	$LockTrigger = New-CimInstance -CimClass $LockUnlockState -Property @{StateChange = 7} -ClientOnly
+	$UnlockTrigger = New-CimInstance -CimClass $LockUnlockState -Property @{StateChange = 8} -ClientOnly
+	$LogonTrigger = New-ScheduledTaskTrigger -AtLogon
+	$Principal = New-ScheduledTaskPrincipal -GroupId 'S-1-5-32-545' -RunLevel Highest
+	$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries
+	
+	$SignalRGB_ON = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-WindowStyle Hidden -Command Start-Process 'signalrgb://effect/apply/Solid%20Color?color=white&-silentlaunch-'"
+	$SignalRGB_OFF = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-WindowStyle Hidden -Command Start-Process 'signalrgb://effect/apply/Solid%20Color?color=black&-silentlaunch-'"
+	$OpenRGB_ON = New-ScheduledTaskAction -Execute $filename -Argument "--noautoconnect --color white --mode direct" -WorkingDirectory $filepath
+	$OpenRGB_OFF = New-ScheduledTaskAction -Execute $filename -Argument "--noautoconnect --color black --mode direct" -WorkingDirectory $filepath
+	
+	if ($filename -eq 'SignalRgbLauncher.exe')
+	{
+		Start-Process 'signalrgb://effect/install/Solid%20Color?&-silentlaunch-'
+		Register-ScheduledTask "RGB ON" -InputObject (New-ScheduledTask -Action ($SignalRGB_ON) -Principal ($Principal) -Trigger ($UnlockTrigger) -Settings ($Settings))
+		Register-ScheduledTask "RGB OFF" -InputObject (New-ScheduledTask -Action ($SignalRGB_OFF) -Principal ($Principal) -Trigger ($LockTrigger) -Settings ($Settings))
+	} elseif ($filename -eq 'OpenRGB.exe')
+	{
+		Register-ScheduledTask "RGB ON" -InputObject (New-ScheduledTask -Action ($OpenRGB_ON) -Principal ($Principal) -Trigger ($UnlockTrigger, $LogonTrigger, $SleepTrigger) -Settings ($Settings))
+		Register-ScheduledTask "RGB OFF" -InputObject (New-ScheduledTask -Action ($OpenRGB_OFF) -Principal ($Principal) -Trigger ($LockTrigger) -Settings ($Settings))
+	}		
+		
+	cls
+	Write-Host "`nPlease wait"
+	start-sleep -seconds 5
+	Start-ScheduledTask -TaskName "RGB ON"
+	goexit
 }
 
 function reset
