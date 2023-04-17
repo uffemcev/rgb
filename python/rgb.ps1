@@ -26,7 +26,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 {
 	$host.ui.RawUI.WindowTitle = 'initialization: python'
 	$o = $MyInvocation.line
-	winget install --id=Python.Python.3.12 --accept-package-agreements --accept-source-agreements --exact --silent
+	winget install --id=Python.Python.3.2 --accept-package-agreements --accept-source-agreements --exact --silent
 	$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 	Start-Process powershell "-ExecutionPolicy Bypass `"cd '$pwd'; $o`"" -Verb RunAs
 	taskkill /fi "WINDOWTITLE eq initialization*"
