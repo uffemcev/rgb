@@ -51,7 +51,7 @@ function install
 	$rgbfile = $b.FileName
 	$rgbfolder = Split-Path -Parent $b.FileName
 	
-	if ($rgbfile -eq '')
+	if ($b.FileName -eq '')
 	{
 		cls
 		Write-Host "`nIncorrect file"
