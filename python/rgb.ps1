@@ -96,6 +96,9 @@ function install
 	create 'UnlockRGB'
 	
 	taskkill /fi "WINDOWTITLE eq OpenRGB*"
+	cls
+	Write-Host "`nPlease wait"
+	start-sleep -seconds 5
 	Start-ScheduledTask -TaskName "UnlockRGB"
 	goexit
 }
