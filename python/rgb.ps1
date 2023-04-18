@@ -117,10 +117,6 @@ except OSError:
 	client = OpenRGBClient()
 
 for device in client.ee_devices:
-    
-	for zone in device.zones:
-		zone.resize(len(device.leds))
- 
 	device.set_mode('direct')
 	client.load_profile(`'$o`')
 	"
