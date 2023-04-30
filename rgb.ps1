@@ -64,8 +64,8 @@ function install
 	
 	$SignalRGB_ON = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-WindowStyle Hidden -Command Start-Process 'signalrgb://effect/apply/Solid%20Color?color=white&-silentlaunch-'"
 	$SignalRGB_OFF = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-WindowStyle Hidden -Command Start-Process 'signalrgb://effect/apply/Solid%20Color?color=black&-silentlaunch-'"
-	$OpenRGB_ON = New-ScheduledTaskAction -Execute $filename -Argument "--noautoconnect --color white --mode direct" -WorkingDirectory $filepath
-	$OpenRGB_OFF = New-ScheduledTaskAction -Execute $filename -Argument "--noautoconnect --color black --mode direct" -WorkingDirectory $filepath
+	$OpenRGB_ON = New-ScheduledTaskAction -Execute $filename -Argument "--noautoconnect -m direct -c white -b 100" -WorkingDirectory $filepath
+	$OpenRGB_OFF = New-ScheduledTaskAction -Execute $filename -Argument "--noautoconnect -m direct -c black -b 0" -WorkingDirectory $filepath
 	
 	if ($filename -eq 'SignalRgbLauncher.exe')
 	{
