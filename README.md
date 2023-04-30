@@ -19,10 +19,8 @@ powershell -ExecutionPolicy Bypass ".\rgb.ps1"
 * По умолчанию, сочетание клавиш WIN + L блокирует рабочую станцию, поэтому подсветка так же выключится
 * Не стоит устанавливать время слишком низким, рекомендованный минимум - 300 секунд
 * Из-за особенностей Windows монитор и подсветка не всегда гаснут ровно через заданное время, иногда необходимо подождать чуть дольше
-* OpenRGB 0.8 имеет проблемы в работе с консольными командами. Необходимо ждать обновления, пользоваться версией 0.7, работать через SDK, либо перейти на SignalRGB
-* В папке python лежит скрипт для OpenRGB с использованием Python SDK
+* OpenRGB 0.8 имеет проблемы в работе с консольными командами. Необходимо пользоваться версией 0.7 или 0.81.
 
 ## Ссылки
-* [OpenRGB Python](https://github.com/jath03/openrgb-python)
 * [SignalRGB Wiki](https://docs.signalrgb.com/application-url-s)
 * [OpenRGB Wiki](https://openrgb-wiki.readthedocs.io/en/latest/Frequently-Asked-Questions)
