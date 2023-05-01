@@ -64,8 +64,8 @@ function install
 	
 	$SignalRGB_ON = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-WindowStyle Hidden -Command Start-Process 'signalrgb://effect/apply/Solid%20Color?color=white&-silentlaunch-'"
 	$SignalRGB_OFF = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-WindowStyle Hidden -Command Start-Process 'signalrgb://effect/apply/Solid%20Color?color=black&-silentlaunch-'"
-	$OpenRGB_ON = New-ScheduledTaskAction -Execute $filename -Argument "-m direct -c white -b 100" -WorkingDirectory $filepath
-	$OpenRGB_OFF = New-ScheduledTaskAction -Execute $filename -Argument "-m direct -c black -b 0" -WorkingDirectory $filepath
+	$OpenRGB_ON = New-ScheduledTaskAction -Execute $filename -Argument "--noautoconnect -m direct -c white -b 100" -WorkingDirectory $filepath
+	$OpenRGB_OFF = New-ScheduledTaskAction -Execute $filename -Argument "--noautoconnect -m direct -c black -b 0" -WorkingDirectory $filepath
 	
 	if ($filename -eq 'SignalRgbLauncher.exe')
 	{
@@ -74,7 +74,6 @@ function install
 		Register-ScheduledTask "RGB OFF" -InputObject (New-ScheduledTask -Action ($SignalRGB_OFF) -Principal ($Principal) -Trigger ($LockTrigger) -Settings ($Settings))
 	} elseif ($filename -eq 'OpenRGB.exe')
 	{
-		iex "$filepath\$filename --noautoconnect --server --autostart-enable --noautoconnect --server"
 		Register-ScheduledTask "RGB ON" -InputObject (New-ScheduledTask -Action ($OpenRGB_ON) -Principal ($Principal) -Trigger ($UnlockTrigger, $LogonTrigger, $SleepTrigger) -Settings ($Settings))
 		Register-ScheduledTask "RGB OFF" -InputObject (New-ScheduledTask -Action ($OpenRGB_OFF) -Principal ($Principal) -Trigger ($LockTrigger) -Settings ($Settings))
 	}		
