@@ -101,7 +101,7 @@ function goexit
 	cls
 	write-host "`nInstallation complete"
 	start-sleep -seconds 5
-	taskkill /fi "WINDOWTITLE eq uffemcev*"
+	taskkill /fi "WINDOWTITLE eq uffemcev rgb"
 }
 
 Write-Host "`ngithub.com/uffemcev/rgb `n`n[1] Install `n[2] Reset `n[3] Exit"
