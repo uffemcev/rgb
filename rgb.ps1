@@ -75,17 +75,16 @@ function install
 		Start-Process 'signalrgb://effect/install/Solid%20Color?&-silentlaunch-'
 		Register-ScheduledTask "RGB ON" -InputObject (New-ScheduledTask -Action ($SignalRGB_ON) -Principal ($Principal) -Trigger ($UnlockTrigger) -Settings ($Settings))
 		Register-ScheduledTask "RGB OFF" -InputObject (New-ScheduledTask -Action ($SignalRGB_OFF) -Principal ($Principal) -Trigger ($LockTrigger) -Settings ($Settings))
-		Start-ScheduledTask -TaskName "RGB ON"
 	} elseif ($filename -eq 'OpenRGB.exe')
 	{
 		Register-ScheduledTask "RGB ON" -InputObject (New-ScheduledTask -Action ($OpenRGB_ON) -Principal ($Principal) -Trigger ($UnlockTrigger, $LogonTrigger, $SleepTrigger) -Settings ($Settings))
 		Register-ScheduledTask "RGB OFF" -InputObject (New-ScheduledTask -Action ($OpenRGB_OFF) -Principal ($Principal) -Trigger ($LockTrigger) -Settings ($Settings))
-		Start-ScheduledTask -TaskName "RGB ON"
 	}		
 		
 	cls
 	Write-Host "`nPlease wait"
 	start-sleep -seconds 5
+	Start-ScheduledTask -TaskName "RGB OFF"
 	Start-ScheduledTask -TaskName "RGB ON"
 	goexit
 }
