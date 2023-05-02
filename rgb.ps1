@@ -19,12 +19,15 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 	$o = $MyInvocation.line
 	Start-Process powershell "-ExecutionPolicy Bypass `"cd '$pwd'; $o`"" -Verb RunAs
 	taskkill /fi "WINDOWTITLE eq initialization"
-} else
+} elseif ($host.ui.RawUI.WindowTitle -ne "uffemcev utilities")
 {
 	$host.ui.RawUI.WindowTitle = 'uffemcev rgb'
-	cls
+} else
+{
+	$host.ui.RawUI.WindowTitle = 'uffemcev utilities'
 }
 
+cls
 function install
 {	
 	Write-Host "`nPlease select OpenRGB.exe or SignalRgbLauncher.exe"
