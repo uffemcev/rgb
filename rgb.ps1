@@ -24,7 +24,6 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 	$host.ui.RawUI.WindowTitle = 'uffemcev rgb'
 }
 
-cls
 function install
 {	
 	Write-Host "`nPlease select OpenRGB.exe or SignalRgbLauncher.exe"
@@ -102,8 +101,11 @@ function goexit
 	taskkill /fi "WINDOWTITLE eq uffemcev rgb"
 }
 
+cls
 Write-Host "`ngithub.com/uffemcev/rgb `n`n[1] Install `n[2] Reset `n[3] Exit"
-$button = $host.ui.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-if ($button.VirtualKeyCode -eq 49) {cls; install}
-if ($button.VirtualKeyCode -eq 50) {cls; reset}
-if ($button.VirtualKeyCode -eq 51) {cls; goexit}
+switch ([console]::ReadKey($true).KeyChar)
+{
+	1 {install}
+	2 {reset}
+	3 {goexit}
+}
