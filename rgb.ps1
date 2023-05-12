@@ -22,9 +22,6 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 } elseif ($host.ui.RawUI.WindowTitle -ne "uffemcev utilities")
 {
 	$host.ui.RawUI.WindowTitle = 'uffemcev rgb'
-} else
-{
-	$host.ui.RawUI.WindowTitle = 'uffemcev utilities'
 }
 
 cls
