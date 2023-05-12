@@ -105,7 +105,7 @@ cls
 Write-Host "`ngithub.com/uffemcev/rgb `n`n[1] Install `n[2] Reset `n[3] Exit"
 switch ([console]::ReadKey($true).KeyChar)
 {
-	1 {install}
-	2 {reset}
-	3 {goexit}
+	1 {cls; install}
+	2 {cls; reset}
+	3 {cls; goexit}
 }
