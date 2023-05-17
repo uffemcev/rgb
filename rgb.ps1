@@ -78,8 +78,9 @@ function install
 		
 	cls
 	Write-Host "`nPlease wait"
-	start-sleep -seconds 5
+	start-sleep -seconds 2
 	Start-ScheduledTask -TaskName "RGB OFF"
+	start-sleep -seconds 2
 	Start-ScheduledTask -TaskName "RGB ON"
 	goexit
 }
