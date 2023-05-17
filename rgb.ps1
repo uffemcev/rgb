@@ -16,10 +16,9 @@
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
 {
 	$host.ui.RawUI.WindowTitle = 'initialization'
-	$o = $MyInvocation.line
-	Start-Process powershell "-ExecutionPolicy Bypass `"cd '$pwd'; $o`"" -Verb RunAs
-	taskkill /fi "WINDOWTITLE eq initialization"
-} elseif ($host.ui.RawUI.WindowTitle -ne "uffemcev utilities")
+	$MyInvocation.line | %{Start-Process powershell "-ExecutionPolicy Bypass `"cd '$pwd'; $_`"" -Verb RunAs}
+	$host.ui.RawUI.WindowTitle | %{taskkill /fi "WINDOWTITLE eq $_"}
+} else
 {
 	$host.ui.RawUI.WindowTitle = 'uffemcev rgb'
 }
@@ -98,7 +97,7 @@ function goexit
 	cls
 	write-host "`nInstallation complete"
 	start-sleep -seconds 5
-	taskkill /fi "WINDOWTITLE eq uffemcev rgb"
+	$host.ui.RawUI.WindowTitle | %{taskkill /fi "WINDOWTITLE eq $_"}
 }
 
 cls
