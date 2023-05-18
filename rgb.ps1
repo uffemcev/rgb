@@ -39,7 +39,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 		$filepath = Split-Path -Parent $_.FullName
 		$filename = $_
 	}
-	cls
+	install
 }
 
 function install
