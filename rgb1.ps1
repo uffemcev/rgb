@@ -25,7 +25,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 } elseif (!(dir -ErrorAction SilentlyContinue -Force | where {$_ -match 'OpenRGB.exe|SignalRgbLauncher.exe'}))
 {
 	$host.ui.RawUI.WindowTitle = 'uffemcev rgb'
-	"`nPlease select OpenRGB.exe or SignalRgbLauncher.exe"
+	Write-Verbose "`nPlease select OpenRGB.exe or SignalRgbLauncher.exe"
 	Add-Type -AssemblyName System.Windows.Forms
 	$b = New-Object System.Windows.Forms.OpenFileDialog
 	$b.InitialDirectory = [Environment]::GetFolderPath('Desktop') 
@@ -81,7 +81,7 @@ function install
 	}
 		
 	cls
-	"`nPlease wait"
+	Write-Verbose "`nPlease wait"
 	start-sleep -seconds 5
 	Start-ScheduledTask -TaskName "RGB OFF"
 	start-sleep -seconds 5
@@ -99,14 +99,14 @@ function reset
 function goexit
 {
 	cls
-	"`nInstallation complete"
+	Write-Verbose "`nInstallation complete"
 	start-sleep -seconds 5
 	$host.ui.RawUI.WindowTitle | where {taskkill /fi "WINDOWTITLE eq $_"}
 }
 
 cls
 if ($option -eq "install") {install} elseif ($option -eq "reset") {reset}
-"`ngithub.com/uffemcev/rgb `n`n[1] Install `n[2] Reset `n[3] Exit"
+Write-Verbose "`ngithub.com/uffemcev/rgb `n`n[1] Install `n[2] Reset `n[3] Exit"
 switch ([console]::ReadKey($true).KeyChar)
 {
 	1 {cls; install}
