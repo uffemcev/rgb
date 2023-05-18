@@ -15,7 +15,7 @@
 #>
 
 [CmdletBinding()]
-param([string]$option)
+param([string]$option, [int]$locktime, [int]$sleeptime)
 
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
 {
@@ -32,7 +32,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 	$b.MultiSelect = $false
 	$b.Filter = 'RGB software|OpenRGB.exe; SignalRgbLauncher.exe'
 	$b.ShowDialog()
-	if ($b.FileName -eq '') {goexit}
+	if ($b.FileName -eq '') {exit}
 	$filepath = Split-Path -Parent $b.FileName
 	$filename = Split-Path -Leaf $b.FileName
 } else
@@ -46,8 +46,8 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 
 function install
 {	
-	$locktime = Read-Host "`nTime in seconds before display and lights turns off"
-	$sleeptime = Read-Host "`nTime in seconds before pc goes to sleep"
+	if (!$locktime) {$locktime = Read-Host "`nTime in seconds before display and lights turns off"}
+	if (!$sleeptime) {$sleeptime = Read-Host "`nTime in seconds before pc goes to sleep"}
 	New-ItemProperty -Path "HKLM:SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\" -Name "InactivityTimeoutSecs" -Value $locktime -PropertyType DWORD -Force
 	powercfg /SETACVALUEINDEX SCHEME_CURRENT SUB_VIDEO VIDEOIDLE $locktime
 	powercfg /SETDCVALUEINDEX SCHEME_CURRENT SUB_VIDEO VIDEOIDLE $locktime
