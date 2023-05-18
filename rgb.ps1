@@ -14,6 +14,9 @@
 	По возвращению на рабочий стол активируется задание RGB ON.
 #>
 
+[CmdletBinding()]
+param([string]$option)
+
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
 {
 	$host.ui.RawUI.WindowTitle = 'initialization'
@@ -22,7 +25,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 } elseif (!(dir -ErrorAction SilentlyContinue -Force | where {$_ -match 'OpenRGB.exe|SignalRgbLauncher.exe'}))
 {
 	$host.ui.RawUI.WindowTitle = 'uffemcev rgb'
-	Write-Host "`nPlease select OpenRGB.exe or SignalRgbLauncher.exe"
+	Write-Output "`nPlease select OpenRGB.exe or SignalRgbLauncher.exe"
 	Add-Type -AssemblyName System.Windows.Forms
 	$b = New-Object System.Windows.Forms.OpenFileDialog
 	$b.InitialDirectory = [Environment]::GetFolderPath('Desktop') 
@@ -37,9 +40,8 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 	$host.ui.RawUI.WindowTitle = 'uffemcev rgb'
 	dir -ErrorAction SilentlyContinue -Force | where {$_ -match 'OpenRGB.exe|SignalRgbLauncher.exe'} | where {
 		$filepath = Split-Path -Parent $_.FullName
-		$filename = $_
+		$filename = $_.Name
 	}
-	install
 }
 
 function install
@@ -76,10 +78,10 @@ function install
 	{
 		Register-ScheduledTask "RGB ON" -InputObject (New-ScheduledTask -Action ($OpenRGB_ON) -Principal ($Principal) -Trigger ($UnlockTrigger, $LogonTrigger, $SleepTrigger) -Settings ($Settings))
 		Register-ScheduledTask "RGB OFF" -InputObject (New-ScheduledTask -Action ($OpenRGB_OFF) -Principal ($Principal) -Trigger ($LockTrigger) -Settings ($Settings))
-	}		
+	}
 		
 	cls
-	Write-Host "`nPlease wait"
+	Write-Output "`nPlease wait"
 	start-sleep -seconds 5
 	Start-ScheduledTask -TaskName "RGB OFF"
 	start-sleep -seconds 5
@@ -89,7 +91,7 @@ function install
 
 function reset
 {
-	Remove-ItemProperty -Path "HKLM:SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\" -Name "InactivityTimeoutSecs"
+	Remove-ItemProperty -ErrorAction SilentlyContinue -Path "HKLM:SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\" -Name "InactivityTimeoutSecs"
 	Unregister-ScheduledTask -TaskName *RGB* -Confirm:$false
 	goexit
 }
@@ -97,13 +99,14 @@ function reset
 function goexit
 {
 	cls
-	write-host "`nInstallation complete"
+	Write-Output "`nInstallation complete"
 	start-sleep -seconds 5
 	$host.ui.RawUI.WindowTitle | where {taskkill /fi "WINDOWTITLE eq $_"}
 }
 
 cls
-Write-Host "`ngithub.com/uffemcev/rgb `n`n[1] Install `n[2] Reset `n[3] Exit"
+if ($option -eq "install") {install} elseif ($option -eq "reset") {reset}
+Write-Output "`ngithub.com/uffemcev/rgb `n`n[1] Install `n[2] Reset `n[3] Exit"
 switch ([console]::ReadKey($true).KeyChar)
 {
 	1 {cls; install}
