@@ -2,29 +2,26 @@
 	Скрипт предлагает выбрать .exe файл OpenRGB или SignalRGB для записи путей.
 	
 	Заданное в скрипте время регулирует момент, когда включатся следующие опции:
-	1. Начинать с экрана входа в систему через $time
-	2. При питании от сети отключать мой экран через $time
+	1. Включать экран блокировки через $locktime
+	2. При питании от сети отключать мой экран через $locktime
+	3. Переходить в режим сна через $sleeptime
 	
 	Этот автоматический триггер используется в планировщике:
 	1. Задание RGB OFF с триггером блокирования ПК для выключения подсветки
 	2. Задание RGB ON c триггером разблокирования ПК для включения подсветки
 	
-	ПК автоматически переходит на экран входа через заданное время, монитор выключается и активируется задание RGB OFF.
+	ПК автоматически включает экран блокировки через заданное время, монитор выключается и активируется задание RGB OFF.
 	По возвращению на рабочий стол активируется задание RGB ON.
 #>
 
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
 {
 	$host.ui.RawUI.WindowTitle = 'initialization'
-	$MyInvocation.line | %{Start-Process powershell "-ExecutionPolicy Bypass `"cd '$pwd'; $_`"" -Verb RunAs}
-	$host.ui.RawUI.WindowTitle | %{taskkill /fi "WINDOWTITLE eq $_"}
-} else
+	$MyInvocation.line | where {Start-Process powershell "-ExecutionPolicy Bypass `"cd '$pwd'; $_`"" -Verb RunAs}
+	$host.ui.RawUI.WindowTitle | where {taskkill /fi "WINDOWTITLE eq $_"}
+} elseif (!(dir -ErrorAction SilentlyContinue -Force | where {$_ -match 'OpenRGB.exe|SignalRgbLauncher.exe'}))
 {
 	$host.ui.RawUI.WindowTitle = 'uffemcev rgb'
-}
-
-function install
-{	
 	Write-Host "`nPlease select OpenRGB.exe or SignalRgbLauncher.exe"
 	Add-Type -AssemblyName System.Windows.Forms
 	$b = New-Object System.Windows.Forms.OpenFileDialog
@@ -32,23 +29,28 @@ function install
 	$b.MultiSelect = $false
 	$b.Filter = 'RGB software|OpenRGB.exe; SignalRgbLauncher.exe'
 	$b.ShowDialog()
+	if ($b.FileName -eq '') {goexit}
 	$filepath = Split-Path -Parent $b.FileName
 	$filename = Split-Path -Leaf $b.FileName
-	
-	if ($b.FileName -eq '')
-	{
-		cls
-		Write-Host "`nIncorrect file"
-		start-sleep -seconds 5
-		goexit
+} else
+{
+	$host.ui.RawUI.WindowTitle = 'uffemcev rgb'
+	dir -ErrorAction SilentlyContinue -Force | where {$_ -match 'OpenRGB.exe|SignalRgbLauncher.exe'} | where {
+		$filepath = Split-Path -Parent $_.FullName
+		$filename = $_
 	}
-
 	cls
-	$time = Read-Host "`nTime in seconds before monitor and rgb turns off"
-	reg add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaverIsSecure" /t REG_SZ /d "1" /f
-	reg add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaveTimeOut" /t REG_SZ /d "$time" /f
-	powercfg /setdcvalueindex scheme_current 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e $time
-	powercfg /setacvalueindex scheme_current 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e $time
+}
+
+function install
+{	
+	$locktime = Read-Host "`nTime in seconds before display and lights turns off"
+	$sleeptime = Read-Host "`nTime in seconds before pc goes to sleep"
+	New-ItemProperty -Path "HKLM:SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\" -Name "InactivityTimeoutSecs" -Value $locktime -PropertyType DWORD -Force
+	powercfg /SETACVALUEINDEX SCHEME_CURRENT SUB_VIDEO VIDEOIDLE $locktime
+	powercfg /SETDCVALUEINDEX SCHEME_CURRENT SUB_VIDEO VIDEOIDLE $locktime
+	powercfg /SETACVALUEINDEX SCHEME_CURRENT SUB_SLEEP STANDBYIDLE $sleeptime
+	powercfg /SETDCVALUEINDEX SCHEME_CURRENT SUB_SLEEP STANDBYIDLE $sleeptime
 
 	$SleepState = Get-CimClass -ClassName MSFT_TaskEventTrigger -Namespace Root/Microsoft/Windows/TaskScheduler:MSFT_TaskEventTrigger
 	$SleepTrigger = New-CimInstance -CimClass $SleepState -ClientOnly
@@ -78,17 +80,16 @@ function install
 		
 	cls
 	Write-Host "`nPlease wait"
-	start-sleep -seconds 2
+	start-sleep -seconds 5
 	Start-ScheduledTask -TaskName "RGB OFF"
-	start-sleep -seconds 2
+	start-sleep -seconds 5
 	Start-ScheduledTask -TaskName "RGB ON"
 	goexit
 }
 
 function reset
 {
-	reg delete "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaverIsSecure" /f
-	reg delete "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaveTimeOut" /f
+	Remove-ItemProperty -Path "HKLM:SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\" -Name "InactivityTimeoutSecs"
 	Unregister-ScheduledTask -TaskName *RGB* -Confirm:$false
 	goexit
 }
@@ -98,7 +99,7 @@ function goexit
 	cls
 	write-host "`nInstallation complete"
 	start-sleep -seconds 5
-	$host.ui.RawUI.WindowTitle | %{taskkill /fi "WINDOWTITLE eq $_"}
+	$host.ui.RawUI.WindowTitle | where {taskkill /fi "WINDOWTITLE eq $_"}
 }
 
 cls
