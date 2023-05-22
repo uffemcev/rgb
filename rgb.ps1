@@ -67,7 +67,6 @@ function install
 	$LogonTrigger = New-ScheduledTaskTrigger -AtLogon
 	$Principal = New-ScheduledTaskPrincipal -GroupId 'S-1-5-32-545' -RunLevel Highest
 	$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries
-	
 	$SignalRGB_ON = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-WindowStyle Hidden -Command Start-Process 'signalrgb://effect/apply/Solid%20Color?color=white&-silentlaunch-'"
 	$SignalRGB_OFF = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-WindowStyle Hidden -Command Start-Process 'signalrgb://effect/apply/Solid%20Color?color=black&-silentlaunch-'"
 	$OpenRGB_ON = New-ScheduledTaskAction -Execute $filename -Argument "--noautoconnect -m direct -c white -b 100" -WorkingDirectory $filepath
