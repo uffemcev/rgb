@@ -97,6 +97,7 @@ function install
 
 function reset
 {
+	$path = "HKCU:Software\Policies\Microsoft\Windows\Control Panel\Desktop\"
 	Remove-ItemProperty -Path $path -Name "ScreenSave*"
 	Unregister-ScheduledTask -TaskName *RGB* -Confirm:$false
 	goexit
