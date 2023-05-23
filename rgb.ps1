@@ -94,7 +94,7 @@ function install
 
 function reset
 {
-	Remove-ItemProperty -ErrorAction SilentlyContinue -Path "HKLM:SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\" -Name "InactivityTimeoutSecs"
+	Remove-ItemProperty -Path "HKLM:SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\" -Name "InactivityTimeoutSecs"
 	Unregister-ScheduledTask -TaskName *RGB* -Confirm:$false
 	goexit
 }
