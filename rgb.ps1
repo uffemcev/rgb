@@ -104,7 +104,7 @@ function goexit
 	cls
 	"`nInstallation complete"
 	start-sleep -seconds 5
-	$host.ui.RawUI.WindowTitle | where {taskkill /fi "WINDOWTITLE eq $_"}
+	exit
 }
 
 cls
