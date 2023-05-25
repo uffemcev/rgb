@@ -52,7 +52,10 @@ function install
 	
 	if (!$locktime) {$locktime = Read-Host "`nTime in seconds before display and lights turns off"}
 	if (!$sleeptime) {$sleeptime = Read-Host "`nTime in seconds before pc goes to sleep"}
-	New-ItemProperty -Path "HKLM:SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\" -Name "InactivityTimeoutSecs" -Value $locktime -PropertyType DWORD -Force
+	$path = "HKCU:Software\Policies\Microsoft\Windows\Control Panel\Desktop\"
+	New-Item -Path $path
+	New-ItemProperty -Path $path -Name "ScreenSaverIsSecure" -Value 1 -PropertyType String -Force
+	New-ItemProperty -Path $path -Name "ScreenSaveTimeOut" -Value $locktime -PropertyType String -Force
 	powercfg /SETACVALUEINDEX SCHEME_CURRENT SUB_VIDEO VIDEOIDLE $locktime
 	powercfg /SETDCVALUEINDEX SCHEME_CURRENT SUB_VIDEO VIDEOIDLE $locktime
 	powercfg /SETACVALUEINDEX SCHEME_CURRENT SUB_SLEEP STANDBYIDLE $sleeptime
@@ -94,7 +97,8 @@ function install
 
 function reset
 {
-	Remove-ItemProperty -Path "HKLM:SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\" -Name "InactivityTimeoutSecs"
+	$path = "HKCU:Software\Policies\Microsoft\Windows\Control Panel\Desktop\"
+	Remove-ItemProperty -Path $path -Name "ScreenSave*"
 	Unregister-ScheduledTask -TaskName *RGB* -Confirm:$false
 	goexit
 }
