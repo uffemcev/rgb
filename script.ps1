@@ -78,8 +78,8 @@ function install
 		Register-ScheduledTask "RGB OFF" -InputObject (New-ScheduledTask -Action ($RGBOFF) -Principal ($Principal) -Trigger ($LockTrigger) -Settings ($Settings))
 	} elseif ($filename -eq 'OpenRGB.exe')
 	{
-		$RGBON = New-ScheduledTaskAction -Execute $filename -Argument "--noautoconnect -m direct -c white -b 100" -WorkingDirectory $filepath
-		$RGBOFF = New-ScheduledTaskAction -Execute $filename -Argument "--noautoconnect -m direct -c black -b 0" -WorkingDirectory $filepath
+		$RGBON = New-ScheduledTaskAction -Execute $filename -Argument "--noautoconnect -m direct -c white" -WorkingDirectory $filepath
+		$RGBOFF = New-ScheduledTaskAction -Execute $filename -Argument "--noautoconnect -m direct -c black" -WorkingDirectory $filepath
 		Register-ScheduledTask "RGB ON" -InputObject (New-ScheduledTask -Action ($RGBON) -Principal ($Principal) -Trigger ($UnlockTrigger, $LogonTrigger, $SleepTrigger) -Settings ($Settings))
 		Register-ScheduledTask "RGB OFF" -InputObject (New-ScheduledTask -Action ($RGBOFF) -Principal ($Principal) -Trigger ($LockTrigger) -Settings ($Settings))
 	}
