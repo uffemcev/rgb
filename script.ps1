@@ -72,14 +72,14 @@ function install
 	if ($filename -eq 'SignalRgbLauncher.exe')
 	{
 		Start-Process 'signalrgb://effect/install/Solid%20Color?&-silentlaunch-'
-		$RGBON = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-WindowStyle Hidden -Command Start-Process 'signalrgb://effect/apply/Solid%20Color?color=white&-silentlaunch-'"
-		$RGBOFF = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-WindowStyle Hidden -Command Start-Process 'signalrgb://effect/apply/Solid%20Color?color=black&-silentlaunch-'"
+		$RGBON = New-ScheduledTaskAction -Execute "explorer.exe" -Argument '"signalrgb://effect/apply/Solid%20Color?color=white&-silentlaunch-'"
+		$RGBOFF = New-ScheduledTaskAction -Execute "explorer.exe" -Argument '"signalrgb://effect/apply/Solid%20Color?color=black&-silentlaunch-'"
 		Register-ScheduledTask "RGB ON" -InputObject (New-ScheduledTask -Action ($RGBON) -Principal ($Principal) -Trigger ($UnlockTrigger) -Settings ($Settings))
 		Register-ScheduledTask "RGB OFF" -InputObject (New-ScheduledTask -Action ($RGBOFF) -Principal ($Principal) -Trigger ($LockTrigger) -Settings ($Settings))
 	} elseif ($filename -eq 'OpenRGB.exe')
 	{
-		$RGBON = New-ScheduledTaskAction -Execute $filename -Argument "--noautoconnect -m direct -c white" -WorkingDirectory $filepath
-		$RGBOFF = New-ScheduledTaskAction -Execute $filename -Argument "--noautoconnect -m direct -c black" -WorkingDirectory $filepath
+		$RGBON = New-ScheduledTaskAction -Execute $filename -Argument "--noautoconnect -m direct -c white -b 100" -WorkingDirectory $filepath
+		$RGBOFF = New-ScheduledTaskAction -Execute $filename -Argument "--noautoconnect -m direct -c black -b 0" -WorkingDirectory $filepath
 		Register-ScheduledTask "RGB ON" -InputObject (New-ScheduledTask -Action ($RGBON) -Principal ($Principal) -Trigger ($UnlockTrigger, $LogonTrigger, $SleepTrigger) -Settings ($Settings))
 		Register-ScheduledTask "RGB OFF" -InputObject (New-ScheduledTask -Action ($RGBOFF) -Principal ($Principal) -Trigger ($LockTrigger) -Settings ($Settings))
 	}
