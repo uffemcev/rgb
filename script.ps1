@@ -72,8 +72,8 @@ function install
 	if ($filename -eq 'SignalRgbLauncher.exe')
 	{
 		Start-Process 'signalrgb://effect/install/Solid%20Color?&-silentlaunch-'
-		$RGBON = New-ScheduledTaskAction -Execute "explorer.exe" -Argument '"signalrgb://effect/apply/Solid%20Color?color=white&-silentlaunch-'"
-		$RGBOFF = New-ScheduledTaskAction -Execute "explorer.exe" -Argument '"signalrgb://effect/apply/Solid%20Color?color=black&-silentlaunch-'"
+		$RGBON = New-ScheduledTaskAction -Execute "explorer.exe" -Argument "`"signalrgb://effect/apply/Solid%20Color?color=white&-silentlaunch-`""
+		$RGBOFF = New-ScheduledTaskAction -Execute "explorer.exe" -Argument "`"signalrgb://effect/apply/Solid%20Color?color=black&-silentlaunch-`""
 		Register-ScheduledTask "RGB ON" -InputObject (New-ScheduledTask -Action ($RGBON) -Principal ($Principal) -Trigger ($UnlockTrigger) -Settings ($Settings))
 		Register-ScheduledTask "RGB OFF" -InputObject (New-ScheduledTask -Action ($RGBOFF) -Principal ($Principal) -Trigger ($LockTrigger) -Settings ($Settings))
 	} elseif ($filename -eq 'OpenRGB.exe')
