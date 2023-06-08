@@ -6,7 +6,7 @@
 ## Запуск
 Онлайн установка скрипта с настройками по умолчанию:
 ```
-powershell -ExecutionPolicy Bypass "& ([ScriptBlock]::Create((irm raw.githubusercontent.com/uffemcev/rgb/main/rgb.ps1)))"
+powershell -ExecutionPolicy Bypass "& ([ScriptBlock]::Create((irm https://uffemcev.github.io/rgb/rgb.ps1)))"
 ```
 Если настройки по умолчанию не устраивают, можно изменить скрипт и запустить его с ПК:
 ```
