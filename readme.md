@@ -10,7 +10,7 @@ powershell -ExecutionPolicy Bypass "& ([ScriptBlock]::Create((irm uffemcev.githu
 ```
 Если настройки по умолчанию не устраивают, можно изменить скрипт и запустить его с ПК:
 ```
-powershell -ExecutionPolicy Bypass ".\rgb.ps1"
+powershell -ExecutionPolicy Bypass ".\script.ps1"
 ```
 По завершению работы файл можно удалить.
 
