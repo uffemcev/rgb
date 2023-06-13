@@ -18,7 +18,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 function install
 {	
 	cleaner
-	if (!(dir -ErrorAction SilentlyContinue -Force | where {$_ -match 'OpenRGB.exe|SignalRgbLauncher.exe'}))
+	if (!(dir | where {$_ -match 'OpenRGB.exe|SignalRgbLauncher.exe'}))
 	{
 		"Please select OpenRGB.exe or SignalRgbLauncher.exe"
 		Add-Type -AssemblyName System.Windows.Forms
@@ -32,10 +32,7 @@ function install
 		$filename = Split-Path -Leaf $b.FileName
 	} else
 	{
-		dir -ErrorAction SilentlyContinue -Force | where {$_ -match 'OpenRGB.exe|SignalRgbLauncher.exe'} | where {
-			$filepath = Split-Path -Parent $_.FullName
-			$filename = $_.Name
-		}
+		dir | where Name -match 'OpenRGB.exe|SignalRgbLauncher.exe' | where {$filepath = Split-Path -Parent $_.FullName; $filename = $_.Name}
 	}
 	
 	cleaner
