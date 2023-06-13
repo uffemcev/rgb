@@ -95,8 +95,7 @@ function goexit
 	cleaner
 	"Bye, $Env:UserName"
 	start-sleep -seconds 5
-	try {(get-process | where MainWindowTitle -eq $host.ui.RawUI.WindowTitle).id | where {taskkill /PID $_}}
-	catch {exit}
+	exit
 }
 
 #МЕНЮ
