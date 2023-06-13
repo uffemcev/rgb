@@ -18,7 +18,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 function install
 {	
 	cleaner
-	if (!(dir | where {$_ -match 'OpenRGB.exe|SignalRgbLauncher.exe'}))
+	if (!(dir | where Name -match 'OpenRGB.exe|SignalRgbLauncher.exe'))
 	{
 		"Please select OpenRGB.exe or SignalRgbLauncher.exe"
 		Add-Type -AssemblyName System.Windows.Forms
