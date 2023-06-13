@@ -106,7 +106,7 @@ function goexit
 #МЕНЮ
 cleaner
 if ($option -eq "install") {install} elseif ($option -eq "reset") {reset}
-"`n[1] Install `n[2] Reset `n[3] Exit"
+"[1] Install `n[2] Reset `n[3] Exit"
 switch ([console]::ReadKey($true).KeyChar)
 {
 	1 {install}
