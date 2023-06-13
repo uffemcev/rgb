@@ -23,7 +23,7 @@ function install
 	if (!(dir -ErrorAction SilentlyContinue -Force | where {$_ -match 'OpenRGB.exe|SignalRgbLauncher.exe'}))
 	{
 		$host.ui.RawUI.WindowTitle = 'uffemcev rgb'
-		"`nPlease select OpenRGB.exe or SignalRgbLauncher.exe"
+		"Please select OpenRGB.exe or SignalRgbLauncher.exe"
 		Add-Type -AssemblyName System.Windows.Forms
 		$b = New-Object System.Windows.Forms.OpenFileDialog
 		$b.InitialDirectory = [Environment]::GetFolderPath('Desktop') 
@@ -41,8 +41,10 @@ function install
 		}
 	}
 	
-	if (!$locktime) {$locktime = Read-Host "`nTime in seconds before display and lights turns off"}
-	if (!$sleeptime) {$sleeptime = Read-Host "`nTime in seconds before pc goes to sleep"}
+	cleaner
+	if (!$locktime) {$locktime = Read-Host "Time in seconds before display and lights turns off"}
+	cleaner
+	if (!$sleeptime) {$sleeptime = Read-Host "Time in seconds before pc goes to sleep"}
 	reg add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaverIsSecure" /t REG_SZ /d "1" /f
 	reg add "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaveTimeOut" /t REG_SZ /d "$locktime" /f
 	powercfg /SETACVALUEINDEX SCHEME_CURRENT SUB_VIDEO VIDEOIDLE $locktime
