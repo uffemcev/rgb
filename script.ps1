@@ -2,6 +2,7 @@
 [CmdletBinding()]
 param([string]$option, [int]$locktime, [int]$sleeptime)
 function cleaner () {$e = [char]27; "$e[H$e[J" + "`nhttps://uffemcev.github.io/rgb`n"}
+$host.ui.RawUI.WindowTitle = 'uffemcev rgb'
 [console]::CursorVisible = $false
 cleaner
 
@@ -13,7 +14,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 	(get-process | where MainWindowTitle -eq $host.ui.RawUI.WindowTitle).id | where {taskkill /PID $_}
 } else
 {
-	$host.ui.RawUI.WindowTitle = 'uffemcev rgb'
+	
 }
 
 #УСТАНОВКА
@@ -22,7 +23,6 @@ function install
 	cleaner
 	if (!(dir -ErrorAction SilentlyContinue -Force | where {$_ -match 'OpenRGB.exe|SignalRgbLauncher.exe'}))
 	{
-		$host.ui.RawUI.WindowTitle = 'uffemcev rgb'
 		"Please select OpenRGB.exe or SignalRgbLauncher.exe"
 		Add-Type -AssemblyName System.Windows.Forms
 		$b = New-Object System.Windows.Forms.OpenFileDialog
@@ -78,7 +78,7 @@ function install
 	}
 		
 	cleaner
-	"Please wait"
+	"Please stand by"
 	start-sleep -seconds 5
 	Start-ScheduledTask -TaskName "RGB OFF"
 	start-sleep -seconds 5
