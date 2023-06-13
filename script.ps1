@@ -1,34 +1,25 @@
-<#
-	Скрипт предлагает выбрать .exe файл OpenRGB или SignalRGB для записи путей.
-	
-	Заданное в скрипте время регулирует момент, когда включатся следующие опции:
-	1. Включать экран блокировки через $locktime
-	2. При питании от сети отключать мой экран через $locktime
-	3. Переходить в режим сна через $sleeptime
-	
-	Этот автоматический триггер используется в планировщике:
-	1. Задание RGB OFF с триггером блокирования ПК для выключения подсветки
-	2. Задание RGB ON c триггером разблокирования ПК для включения подсветки
-	
-	ПК автоматически включает экран блокировки через заданное время, монитор выключается и активируется задание RGB OFF.
-	По возвращению на рабочий стол активируется задание RGB ON.
-#>
-
+#НАЧАЛЬНЫЕ ПАРАМЕТРЫ
 [CmdletBinding()]
 param([string]$option, [int]$locktime, [int]$sleeptime)
+function cleaner () {$e = [char]27; "$e[H$e[J" + "`nhttps://uffemcev.github.io/utilities`n"}
+[console]::CursorVisible = $false
+cleaner
 
+#ПРОВЕРКА ПРАВ
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
 {
-	$host.ui.RawUI.WindowTitle = 'initialization'
-	$MyInvocation.line | where {Start-Process powershell "-ExecutionPolicy Bypass `"cd '$pwd'; $_`"" -Verb RunAs}
-	$host.ui.RawUI.WindowTitle | where {taskkill /fi "WINDOWTITLE eq $_"}
+	try {Start-Process wt "powershell -ExecutionPolicy Bypass -Command &{cd $pwd\; $($MyInvocation.line)}" -Verb RunAs}
+	catch {Start-Process conhost "powershell -ExecutionPolicy Bypass -Command &{cd $pwd; $($MyInvocation.line)}" -Verb RunAs}
+	(get-process | where MainWindowTitle -eq $host.ui.RawUI.WindowTitle).id | where {taskkill /PID $_}
 } else
 {
 	$host.ui.RawUI.WindowTitle = 'uffemcev rgb'
 }
 
+#УСТАНОВКА
 function install
 {	
+	cleaner
 	if (!(dir -ErrorAction SilentlyContinue -Force | where {$_ -match 'OpenRGB.exe|SignalRgbLauncher.exe'}))
 	{
 		$host.ui.RawUI.WindowTitle = 'uffemcev rgb'
@@ -84,8 +75,8 @@ function install
 		Register-ScheduledTask "RGB OFF" -InputObject (New-ScheduledTask -Action ($RGBOFF) -Principal ($Principal) -Trigger ($LockTrigger) -Settings ($Settings))
 	}
 		
-	cls
-	"`nPlease wait"
+	cleaner
+	"Please wait"
 	start-sleep -seconds 5
 	Start-ScheduledTask -TaskName "RGB OFF"
 	start-sleep -seconds 5
@@ -93,27 +84,32 @@ function install
 	goexit
 }
 
+#СБРОС
 function reset
 {
+	cleaner
 	Remove-ItemProperty -Path "HKCU:Software\Policies\Microsoft\Windows\Control Panel\Desktop\" -Name "ScreenSave*"
 	Unregister-ScheduledTask -TaskName *RGB* -Confirm:$false
 	goexit
 }
 	
+#ВЫХОД
 function goexit
 {
-	cls
-	"`nInstallation complete"
+	cleaner
+	"Bye, $Env:UserName"
 	start-sleep -seconds 5
-	exit
+	try {(get-process | where MainWindowTitle -eq $host.ui.RawUI.WindowTitle).id | where {taskkill /PID $_}}
+	catch {exit}
 }
 
-cls
+#МЕНЮ
+cleaner
 if ($option -eq "install") {install} elseif ($option -eq "reset") {reset}
-"`ngithub.com/uffemcev/rgb `n`n[1] Install `n[2] Reset `n[3] Exit"
+"`n[1] Install `n[2] Reset `n[3] Exit"
 switch ([console]::ReadKey($true).KeyChar)
 {
-	1 {cls; install}
-	2 {cls; reset}
-	3 {cls; goexit}
+	1 {install}
+	2 {reset}
+	3 {goexit}
 }
