@@ -1,7 +1,7 @@
 #НАЧАЛЬНЫЕ ПАРАМЕТРЫ
 [CmdletBinding()]
 param([string]$option, [int]$locktime, [int]$sleeptime)
-function cleaner () {$e = [char]27; "$e[H$e[J" + "`nhttps://uffemcev.github.io/utilities`n"}
+function cleaner () {$e = [char]27; "$e[H$e[J" + "`nhttps://uffemcev.github.io/rgb`n"}
 [console]::CursorVisible = $false
 cleaner
 
