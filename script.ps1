@@ -9,8 +9,8 @@ cleaner
 #ПРОВЕРКА ПРАВ
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
 {
-	try {Start-Process wt "powershell -ExecutionPolicy Bypass -Command &{cd $pwd\; $($MyInvocation.line)}" -Verb RunAs}
-	catch {Start-Process conhost "powershell -ExecutionPolicy Bypass -Command &{cd $pwd; $($MyInvocation.line)}" -Verb RunAs}
+	try {Start-Process wt "powershell -ExecutionPolicy Bypass -Command &{cd '$pwd'\; $($MyInvocation.line -replace (";"),("\;"))}" -Verb RunAs}
+	catch {Start-Process conhost "powershell -ExecutionPolicy Bypass -Command &{cd '$pwd'; $($MyInvocation.line)}" -Verb RunAs}
 	(get-process | where MainWindowTitle -eq $host.ui.RawUI.WindowTitle).id | where {taskkill /PID $_}
 }
 
