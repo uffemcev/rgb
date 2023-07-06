@@ -73,9 +73,7 @@ function install
 		
 	cleaner
 	"Please stand by"
-	start-sleep -seconds 5
-	Start-ScheduledTask -TaskName "RGB OFF"
-	start-sleep -seconds 5
+	start-sleep -seconds 10
 	Start-ScheduledTask -TaskName "RGB ON"
 	goexit
 }
